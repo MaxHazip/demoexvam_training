@@ -1,5 +1,5 @@
 from app.core.database import Base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, CheckConstraint, Enum, Index, func
 import enum
 
@@ -24,6 +24,10 @@ class User(Base):
         server_default="user",
         nullable=False
     )
+
+    requests: Mapped["Request"] = relationship(back_populates="user")
+
+    reviews: Mapped["Review"] = relationship(back_populates="user")
 
     __table_args__ = (
         CheckConstraint(
