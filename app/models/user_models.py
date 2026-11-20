@@ -17,7 +17,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     phone: Mapped[str] = mapped_column(String(15), nullable=False, unique=True)
-    email: Mapped[str] = mapped_column(String(70), nullable=False, unique=True)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     role: Mapped[UserRoles] = mapped_column(
         Enum(UserRoles, name="user_roles_enum", values_callable=lambda x: [e.value for e in x]),
         default=UserRoles.USER,
@@ -25,13 +25,13 @@ class User(Base):
         nullable=False
     )
 
-    requests: Mapped["Request"] = relationship(back_populates="user")
+    requests: Mapped[list["Request"]] = relationship(back_populates="user")
 
-    reviews: Mapped["Review"] = relationship(back_populates="user")
+    reviews: Mapped[list["Review"]] = relationship(back_populates="user")
 
     __table_args__ = (
         CheckConstraint(
-            r"full_name ~ '^[А-Яа-яЁё]+([ -][А-Яа-яЁё]+)*$'",
+            r"full_name ~ '^[А-Яа-яЁё]+([ ][А-Яа-яЁё]+)*$'",
             name="chk_full_name_cyrillic"
         ),
         CheckConstraint(

@@ -6,7 +6,7 @@ from datetime import datetime
 
 class PaymentType(enum.Enum):
 
-    CASH = "cash"
+    OFFLINE = "offline"
     SBP = "SBP"
 
 class RequestStatus(enum.Enum):
@@ -23,7 +23,8 @@ class Request(Base):
 
     room_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("rooms.id", ondelete="CASCADE")
+        ForeignKey("rooms.id", ondelete="SET NULL"),
+        nullable=True
     )
     room: Mapped["Room"] = relationship(back_populates="requests")
 
@@ -34,8 +35,8 @@ class Request(Base):
 
     user_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
     )
     user: Mapped["User"] = relationship(back_populates="requests")
 
@@ -46,8 +47,8 @@ class Request(Base):
         nullable=False
     )
     start_time: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True),
+        TIMESTAMP(timezone=False),
         nullable=False
     )
 
-    reviews: Mapped["Review"] = relationship(back_populates="request")
+    reviews: Mapped[list["Review"]] = relationship(back_populates="request")
