@@ -24,14 +24,14 @@ class Review(Base):
 
     request_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("requests.id", ondelete="CASCADE"),
+        ForeignKey("requests.id"),
         nullable=False
     )
     request: Mapped["Request"] = relationship(back_populates="reviews")
 
     user_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
+        ForeignKey("users.id"),
         nullable=False
     )
     user: Mapped["User"] = relationship(back_populates="reviews")
@@ -40,5 +40,5 @@ class Review(Base):
         CheckConstraint(
             r"content !~ '^\s*$'",
             name="chk_content_is_not_empty"
-        )
+        ),
     )

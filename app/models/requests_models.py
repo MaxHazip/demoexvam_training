@@ -23,7 +23,7 @@ class Request(Base):
 
     room_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("rooms.id", ondelete="CASCADE"),
+        ForeignKey("rooms.id"),
     )
     room: Mapped["Room"] = relationship(back_populates="requests")
 
@@ -34,7 +34,7 @@ class Request(Base):
 
     user_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
+        ForeignKey("users.id"),
     )
     user: Mapped["User"] = relationship(back_populates="requests")
 
