@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
+import alembic_postgresql_enum
+
 from app.core.database import Base
 
 from app.models.requests_models import Request
