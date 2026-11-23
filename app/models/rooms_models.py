@@ -36,8 +36,8 @@ class Room(Base):
 
     room_type_id: Mapped[int] = mapped_column(
         Integer, 
-        ForeignKey("room_types.id", ondelete="SET NULL"),
-        nullable=True
+        ForeignKey("room_types.id", ondelete="CASCADE"),
+        nullable=False
     )
     room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
 
@@ -49,7 +49,7 @@ class Room(Base):
             name="chk_name_length_3_or_more"
         ),
         CheckConstraint(
-            r"name ~ '^[А-Яа-яЁёA-Za-z0-9]{3,}([ -][А-Яа-яЁёA-Za-z0-9]+)*$'",
+            r"name ~ '^[А-Яа-яЁёA-Za-z0-9№]{3,}([ -][№А-Яа-яЁёA-Za-z0-9]+)*$'",
             name="chk_name_format"
         ),
     )
