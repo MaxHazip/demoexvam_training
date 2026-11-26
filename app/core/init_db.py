@@ -6,6 +6,7 @@ from app.schemas.room_types_schemas import RoomTypesCreateRequest
 from app.services.rooms_service import RoomService
 from app.schemas.rooms_schemas import RoomCreateRequest
 from app.core.security import get_password_hash
+ 
 
 async def create_admin(session: AsyncSession):
 
@@ -36,17 +37,19 @@ async def create_initial_room_types(session: AsyncSession):
         "кинозал"
     ]
 
-    for type in init_types:
 
-        room_type = await room_types_service.get_room_type_by_name(room_type=type)
+    async with session.begin():
+        for type in init_types:
 
-        if not room_type:
+            room_type = await room_types_service.get_room_type_by_name(room_type=type)
 
-            new_type = RoomTypesCreateRequest(
-                name=type
-            )
+            if not room_type:
 
-            await room_types_service.create_new_room_type(new_type)
+                new_type = RoomTypesCreateRequest(
+                    name=type
+                )
+
+                await room_types_service.create_new_room_type(new_type)
 
 async def create_initial_rooms(session: AsyncSession):
 
@@ -69,15 +72,17 @@ async def create_initial_rooms(session: AsyncSession):
 
     ]
 
-    for room in init_rooms:
+    async with session.begin():
 
-        db_room = await room_service.get_room_by_name(name=room["name"])
+        for room in init_rooms:
 
-        if not db_room:
+            db_room = await room_service.get_room_by_name(name=room["name"])
 
-            new_room = RoomCreateRequest(
-                name=room["name"],
-                room_type=room["room_type"]
-            )
+            if not db_room:
 
-            await room_service.create_new_room(new_room=new_room)
+                new_room = RoomCreateRequest(
+                    name=room["name"],
+                    room_type=room["room_type"]
+                )
+
+                await room_service.create_new_room(new_room=new_room)
