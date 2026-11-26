@@ -2,17 +2,37 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from app.core.database import get_session
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="Конференции.РФ")
-
-@app.get(
-    path="/"
+from app.core.init_db import create_admin, create_initial_room_types, create_initial_rooms
+from app.core.database import async_session_maker
+from app.exceptions import (
+    UserAlreadyExistsException,
+    RoomTypeAlreayExistsException,
+    RoomAlreayExistsException,
+    NoSuchRoomTypeException
 )
-async def test_endpoint(
-    session: AsyncSession = Depends(get_session)
+from app.handlers import (
+    user_already_exists_handler,
+    room_type_alreay_exists_handler,
+    room_already_exists_hanler,
+    no_such_room_type_handler
+)
+
+@asynccontextmanager
+async def lifespan(
+    app: FastAPI
 ):
 
-    result = (await session.execute(text("SELECT 1"))).scalar_one()
+    async with async_session_maker() as session:
+        await create_admin(session)
+        await create_initial_room_types(session)
+        await create_initial_rooms(session)
+        yield
 
-    if result == 1:
-        return {"Message": "OK"}
+app = FastAPI(title="Конференции.РФ", lifespan=lifespan)
+
+app.add_exception_handler(UserAlreadyExistsException, user_already_exists_handler)
+app.add_exception_handler(RoomTypeAlreayExistsException, room_type_alreay_exists_handler)
+app.add_exception_handler(RoomAlreayExistsException, room_already_exists_hanler)
+app.add_exception_handler(NoSuchRoomTypeException, no_such_room_type_handler)
